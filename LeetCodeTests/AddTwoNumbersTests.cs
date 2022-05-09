@@ -21,7 +21,7 @@ namespace LeetCodeTests
             
             Assert.Equal(7, l3.val);
             Assert.Equal(0, l3.next.val);
-            Assert.Equal(7, l3.next.next.val);
+            Assert.Equal(8, l3.next.next.val);
         }
 
         [Fact]
@@ -41,7 +41,7 @@ namespace LeetCodeTests
         {
             // l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
             var l1 = new ListNode(9);
-            AddNodes(l1, new []{9,9,9,9,9,9});
+            AddNodes(l1, new []{9,9,9,9,9,9,});
             
             var l2 = new ListNode(9);
             AddNodes(l2, new[]{9,9,9});
@@ -49,42 +49,43 @@ namespace LeetCodeTests
             var l3 = AddTwoNumbers(l1, l2);
             
             Assert.Equal(8, l3.val);
-            Assert.Equal(8, l3.next.val);
-            Assert.Equal(8, l3.next.next.val);
-            Assert.Equal(8, l3.next.next.next.val);
-            Assert.Equal(9, l3.next.next.next.next.next.val);
-            Assert.Equal(9, l3.next.next.next.next.next.val);
-            Assert.Equal(9, l3.next.next.next.next.next.val);
+            Assert.Equal(9, l3.next.val);
+            Assert.Equal(9, l3.next.next.val);
+            Assert.Equal(9, l3.next.next.next.val);
+            Assert.Equal(0, l3.next.next.next.next.val);
+            Assert.Equal(0, l3.next.next.next.next.next.val);
+            Assert.Equal(0, l3.next.next.next.next.next.next.val);
+            Assert.Equal(1, l3.next.next.next.next.next.next.next.val);
         }
 
         private ListNode AddTwoNumbers(ListNode l1, ListNode l2)
         {
-            var newNode = Add(l1, l2);
-            AddNode(newNode, l1.next, l2.next);
+            var (newNode, overflow) = Add(l1, l2, 0);
+            AddNode(newNode, l1.next, l2.next, overflow);
 
             return newNode;
         }
 
-        private static void AddNode(ListNode node, ListNode l1, ListNode l2 = null)
+        private static void AddNode(ListNode node, ListNode l1, ListNode l2, int overflow)
         {
-            if (l1 == null && l2 == null) return;
-            if (l1 == null)
-            {
-                node.next = l2;
-                AddNode(node.next, l2.next);
-            }
-            else if (l2 == null)
-            {
-                node.next = l1;
-                AddNode(node.next, l1.next);
-            }
-            else
-            {
-                node.next = Add(l1, l2);
-                AddNode(node.next, l1.next, l2.next);
-            }
+            if (l1 == null && l2 == null && overflow == 0) return;
+            int newOverflow;
+            (node.next, newOverflow) = Add(l1, l2, overflow);
+            AddNode(node.next, l1?.next, l2?.next, newOverflow);
         }
-
+        
+        public static (ListNode node, int newOverflow) Add(ListNode l1, ListNode l2, int overflow)
+        {
+            var sum = (l1?.val ?? 0) + (l2?.val ?? 0) + overflow;
+            var adjustedSum = sum >= 10
+                ? sum - 10
+                : sum;
+            var newOverflow = sum >= 10
+                ? 1
+                : 0;
+            return (new ListNode(adjustedSum), newOverflow);
+        }
+        
         private static void AddNodes(ListNode node, IEnumerable<int> values)
         {
             if (!values.Any()) return;
@@ -92,14 +93,7 @@ namespace LeetCodeTests
             node.next = new ListNode(values.First());
             AddNodes(node.next, values.Skip(1));
         }
-        
-        public static ListNode Add(ListNode l1, ListNode l2)
-        {
-            var sum = l1.val + l2.val;
-            return new ListNode(sum >= 10
-                ? sum - 10
-                : sum);
-        }
+
         
     }
 
