@@ -40,7 +40,6 @@ namespace LeetCodeTests
         public void Should_add_two_list_with_different_length()
         {
             // l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]
-
             var l1 = new ListNode(9);
             AddNodes(l1, new []{9,9,9,9,9,9});
             
@@ -49,24 +48,43 @@ namespace LeetCodeTests
 
             var l3 = Add(l1, l2);
             
-            Assert.Equal(0, l3.Val);
+            Assert.Equal(8, l3.Val);
+            Assert.Equal(8, l3.Next.Val);
+            Assert.Equal(8, l3.Next.Next.Val);
+            Assert.Equal(8, l3.Next.Next.Next.Val);
+            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
+            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
+            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
         }
 
         private ListNode Add(ListNode l1, ListNode l2)
         {
             var node = l1.Add(l2);
-            SetNode(node, l1, l2);
+            AddNode(node, l1, l2);
 
             return node;
         }
 
-        private static void SetNode(ListNode node, ListNode l1, ListNode l2)
+        private static void AddNode(ListNode node, ListNode l1, ListNode l2 = null)
         {
-            if (l1.Next == null && l2.Next == null) return;
-    
-            if (l1.Next != null)
-            node.Next = l1.Next.Add(l2.Next);
-            SetNode(node.Next, l1.Next, l2.Next);
+            // if (l1 == null && l2 == null) return;
+            if (l1?.Next == null && l2?.Next == null) return;
+            
+            if (l1?.Next == null)
+            {
+                node.Next = l2.Next;
+                AddNode(node.Next, l2.Next);
+            }
+            else if (l2?.Next == null)
+            {
+                node.Next = l1.Next;
+                AddNode(node.Next, l1.Next);
+            }
+            else
+            {
+                node.Next = l1.Next.Add(l2.Next);
+                AddNode(node.Next, l1.Next, l2.Next);
+            }
         }
 
         private static void AddNodes(ListNode node, IEnumerable<int> values)
@@ -91,7 +109,8 @@ namespace LeetCodeTests
 
         public ListNode Add(ListNode l)
         {
-            var sum = Val + l.Val;
+            var toAdd = l?.Val ?? 0;
+            var sum = Val + toAdd;
             return new ListNode(sum >= 10
                 ? sum - 10
                 : sum);
