@@ -17,11 +17,11 @@ namespace LeetCodeTests
             var l2 = new ListNode(5);
             AddNodes(l2, new []{6, 4});
 
-            var l3 = Add(l1, l2);
+            var l3 = AddTwoNumbers(l1, l2);
             
-            Assert.Equal(7, l3.Val);
-            Assert.Equal(0, l3.Next.Val);
-            Assert.Equal(7, l3.Next.Next.Val);
+            Assert.Equal(7, l3.val);
+            Assert.Equal(0, l3.next.val);
+            Assert.Equal(7, l3.next.next.val);
         }
 
         [Fact]
@@ -31,9 +31,9 @@ namespace LeetCodeTests
             var l1 = new ListNode(0);
             var l2 = new ListNode(0);
 
-            var l3 = Add(l1, l2);
+            var l3 = AddTwoNumbers(l1, l2);
             
-            Assert.Equal(0, l3.Val);
+            Assert.Equal(0, l3.val);
         }
 
         [Fact]
@@ -46,44 +46,42 @@ namespace LeetCodeTests
             var l2 = new ListNode(9);
             AddNodes(l2, new[]{9,9,9});
 
-            var l3 = Add(l1, l2);
+            var l3 = AddTwoNumbers(l1, l2);
             
-            Assert.Equal(8, l3.Val);
-            Assert.Equal(8, l3.Next.Val);
-            Assert.Equal(8, l3.Next.Next.Val);
-            Assert.Equal(8, l3.Next.Next.Next.Val);
-            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
-            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
-            Assert.Equal(9, l3.Next.Next.Next.Next.Next.Val);
+            Assert.Equal(8, l3.val);
+            Assert.Equal(8, l3.next.val);
+            Assert.Equal(8, l3.next.next.val);
+            Assert.Equal(8, l3.next.next.next.val);
+            Assert.Equal(9, l3.next.next.next.next.next.val);
+            Assert.Equal(9, l3.next.next.next.next.next.val);
+            Assert.Equal(9, l3.next.next.next.next.next.val);
         }
 
-        private ListNode Add(ListNode l1, ListNode l2)
+        private ListNode AddTwoNumbers(ListNode l1, ListNode l2)
         {
-            var node = l1.Add(l2);
-            AddNode(node, l1, l2);
+            var newNode = Add(l1, l2);
+            AddNode(newNode, l1.next, l2.next);
 
-            return node;
+            return newNode;
         }
 
         private static void AddNode(ListNode node, ListNode l1, ListNode l2 = null)
         {
-            // if (l1 == null && l2 == null) return;
-            if (l1?.Next == null && l2?.Next == null) return;
-            
-            if (l1?.Next == null)
+            if (l1 == null && l2 == null) return;
+            if (l1 == null)
             {
-                node.Next = l2.Next;
-                AddNode(node.Next, l2.Next);
+                node.next = l2;
+                AddNode(node.next, l2.next);
             }
-            else if (l2?.Next == null)
+            else if (l2 == null)
             {
-                node.Next = l1.Next;
-                AddNode(node.Next, l1.Next);
+                node.next = l1;
+                AddNode(node.next, l1.next);
             }
             else
             {
-                node.Next = l1.Next.Add(l2.Next);
-                AddNode(node.Next, l1.Next, l2.Next);
+                node.next = Add(l1, l2);
+                AddNode(node.next, l1.next, l2.next);
             }
         }
 
@@ -91,29 +89,29 @@ namespace LeetCodeTests
         {
             if (!values.Any()) return;
 
-            node.Next = new ListNode(values.First());
-            AddNodes(node.Next, values.Skip(1));
+            node.next = new ListNode(values.First());
+            AddNodes(node.next, values.Skip(1));
         }
+        
+        public static ListNode Add(ListNode l1, ListNode l2)
+        {
+            var sum = l1.val + l2.val;
+            return new ListNode(sum >= 10
+                ? sum - 10
+                : sum);
+        }
+        
     }
 
     public class ListNode
     {
-        public int Val { get; }
-        public ListNode Next { get; set; }
+        public int val { get; }
+        public ListNode next { get; set; }
         
         public ListNode(int val = 0, ListNode next = null)
         {
-            Val = val;
-            Next = next;
-        }
-
-        public ListNode Add(ListNode l)
-        {
-            var toAdd = l?.Val ?? 0;
-            var sum = Val + toAdd;
-            return new ListNode(sum >= 10
-                ? sum - 10
-                : sum);
+            this.val = val;
+            this.next = next;
         }
     }
 }
