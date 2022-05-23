@@ -4,7 +4,7 @@ using Xunit;
 
 namespace LeetCodeTests
 {
-    public class LongestPalindromicSubstring
+    public class LongestPalindromicSubstringTests
     {
         [Theory]
         [InlineData("babad", "bab")]
