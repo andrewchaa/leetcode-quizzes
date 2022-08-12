@@ -1,6 +1,6 @@
 namespace HackerRankTests;
 
-public class PreparationKitTests
+public class PlusMinusTests
 {
     [Fact]
     public void Should_return_ratios_of_positive_and_negative_numbers()
